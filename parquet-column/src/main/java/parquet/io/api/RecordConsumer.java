@@ -49,6 +49,12 @@ package parquet.io.api;
  *   }
  * }
  * </pre>
+ *
+ * <pre>
+ *   1. RecordConsumerLoggingWrapper: 增加打印日志功能
+ *   2. GroupWriter 将一个Group数据写入对应的Consumer(实现类: MessageColumnIORecordConsumer)
+ *   3. 在Consumer这里还不涉及数据编码
+ * </pre>
  * @author Julien Le Dem
  *
  */

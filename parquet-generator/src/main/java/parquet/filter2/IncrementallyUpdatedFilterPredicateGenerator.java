@@ -22,6 +22,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * <pre>
+ * 动态生成IncrementallyUpdatedFilterPredicateBuilder类
+ * </pre>
+ */
 public class IncrementallyUpdatedFilterPredicateGenerator {
 
   public static void main(String[] args) throws IOException {

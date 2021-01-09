@@ -32,6 +32,24 @@ import parquet.column.ParquetProperties.WriterVersion;
 import parquet.column.page.PageWriteStore;
 import parquet.column.page.PageWriter;
 
+/**
+ * 关注数据写的流程
+ * def flush() {
+ *   for(ColumnWriter <- all column Writers) {
+ *     ColumnWriter.flush() {
+ *       ColumnWriter.writePage() {
+ *         ColumnChunkPageWriter.writePage() {
+ *           DataPageHeader(uncompressedSize, compressedSize, valueCount, statistics, rlEncoding, dlEncoding, valuesEncoding, buf)
+ *           compressed(repetitionLevel data, definitionLevel data, dataColumn)
+ *         }
+ *       }
+ *
+ *       ColumnChunkPageWriter.writeDictionaryPage(dictionaryPage)
+ *     }
+ *   }
+ * }
+ *
+ */
 public class ColumnWriteStoreV1 implements ColumnWriteStore {
 
   private final Map<ColumnDescriptor, ColumnWriterV1> columns = new TreeMap<ColumnDescriptor, ColumnWriterV1>();

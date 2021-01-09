@@ -62,6 +62,12 @@ class ColumnReaderImpl implements ColumnReader {
 
   /**
    * binds the lower level page decoder to the record converter materializing the records
+   * <pre>
+   * 读取数据
+   * 1. read读取数据在dictionary中的ID
+   * 2. getXXX() 根据dictionaryId 获取数据
+   * 3. writeValue() 根据dictionaryId 获取数据并将值写入对应的converter中
+   * </pre>
    *
    * @author Julien Le Dem
    *
@@ -362,6 +368,10 @@ class ColumnReaderImpl implements ColumnReader {
   }
 
   /**
+   * <pre>
+   *   1. readValue()内部调用bind读取值到中间存储 current
+   *   2. 调用binding.writeValue()将读取的数据current 写入对应的Group的converter中
+   * </pre>
    * {@inheritDoc}
    * @see parquet.column.ColumnReader#writeCurrentValueToConverter()
    */
@@ -531,6 +541,9 @@ class ColumnReaderImpl implements ColumnReader {
     readRepetitionAndDefinitionLevels();
   }
 
+  /**
+   * 从pageReader中取出一个page，再调用对应page的方法解析数据
+   */
   private void readPage() {
     if (DEBUG) LOG.debug("loading page");
     DataPage page = pageReader.readPage();
@@ -548,6 +561,14 @@ class ColumnReaderImpl implements ColumnReader {
     });
   }
 
+  /**
+   * <pre>
+   * 1. dataEncoding根据column path和Type获取reader
+   * 2. 如果使用了字典，bindToDictionary，否则返回直接读数据的bind
+   * 3. 对输入数据bytes包装为LittleEndianDataInputStream, 准备数据读取
+   * 4. 如果之前有reader了，进行recover pre page last value(Parqet BUG)
+   * </pre>
+   */
   private void initDataReader(Encoding dataEncoding, byte[] bytes, int offset, int valueCount) {
     ValuesReader previousReader = this.dataColumn;
 

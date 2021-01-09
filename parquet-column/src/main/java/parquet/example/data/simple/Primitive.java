@@ -21,6 +21,13 @@ package parquet.example.data.simple;
 import parquet.io.api.Binary;
 import parquet.io.api.RecordConsumer;
 
+/**
+ * <pre>
+ *    1. 每个实现子类中的value属性存储实际的数据值
+ *    2. 通过writeValue()方法关联到对应的consumer来写数据
+ *    3. 通过对应的get方法获取对应的数据的值
+ * </pre>
+ */
 public abstract class Primitive {
 
   public String getString() {

@@ -25,7 +25,9 @@ import parquet.io.api.Binary;
 
 /**
  * base class to implement an encoding for a given column
- *
+ *<pre>
+ *定义了write各种数据类型的接口。
+ *</pre>
  * @author Julien Le Dem
  *
  */

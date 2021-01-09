@@ -476,6 +476,39 @@ public class ParquetFileReader implements Closeable {
 
 
   /**
+   *
+   * <pre>
+   *   实现数据连续读取算法
+   *
+   *   | column | start |  end  |  rowCount  |
+   *   |--------|-------|-------|------------|
+   *   |  col1  |   0   |   10  |    5       |
+   *   |  col2  |  10   |   20  |    2       |
+   *   |  col3  |  20   |   30  |    3       |
+   *   |  col4  |  30   |   40  |    5       |
+   *   |  col5  |  40   |   50  |    1       |
+   *
+   *   block:
+   *      columns: c1, c3, c4
+   *
+   *   allChunks:
+   *      chunk1:
+   *        length: 10
+   *        chunks:
+   *          ChunkDescriptor(c1, mc, startingPos=0, mc.getTotalSize()=10)
+   *
+   *      chunk2
+   *        length: 20
+   *        chunks:
+   *          ChunkDescriptor(c3, mc, startingPos=0, mc.getTotalSize()=10)
+   *          ChunkDescriptor(c4, mc, startingPos=0, mc.getTotalSize()=10)
+   *
+   * function: 读取currentBlock
+   * 1. 解析Block中的字段，连续的数据封装为一个ChunkList进行数据读取
+   * 2. 解析ChunkList中每个chunk的page数据，返回ColumnChunkPageReader
+   * 3. ColumnChunkPageReadStore 存储所有字段对应的ColumnChunkPageReader引用
+   *
+   * </pre>
    * Reads all the columns requested from the row group at the current file position.
    * @throws IOException if an error occurs while reading
    * @return the PageReadStore which can provide PageReaders for each column.
@@ -552,6 +585,9 @@ public class ParquetFileReader implements Closeable {
     }
 
     /**
+     * 数据byte在{@link ParquetFileReader#readNextRowGroup() }已经被读取，这里对数据封装为page对象
+     * <br>
+     *
      * Read all of the pages in a given column chunk.
      * @return the list of pages
      */

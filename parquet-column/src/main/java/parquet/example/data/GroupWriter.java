@@ -22,6 +22,14 @@ import parquet.io.api.RecordConsumer;
 import parquet.schema.GroupType;
 import parquet.schema.Type;
 
+/**
+ * 根据列顺序写入整个Group数据
+ * 1. See RecordConsumer
+ *
+ * 2. GroupType schema 可以类比于整个写Task的元数据描述，需要写入多少字段（支持嵌套写），每个字段有多少值
+ * 2.1 type.getFieldCount()
+ * 2.2 group.getFieldRepetitionCount(field)
+ */
 public class GroupWriter {
 
   private final RecordConsumer recordConsumer;

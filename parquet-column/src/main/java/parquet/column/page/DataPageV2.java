@@ -23,6 +23,12 @@ import parquet.bytes.BytesInput;
 import parquet.column.Encoding;
 import parquet.column.statistics.Statistics;
 
+/**
+ * 这个类写的好奇怪，明明是已经在上层方法调用时，已经调用 decompressor对data进行解压，方法名竟然还是uncompressed
+ *
+ * decompressor.decompress(dataPageV2.getData(), uncompressedSize)
+ *
+ */
 public class DataPageV2 extends DataPage {
 
   /**

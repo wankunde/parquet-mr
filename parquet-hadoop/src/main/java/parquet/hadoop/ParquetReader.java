@@ -43,6 +43,10 @@ import parquet.schema.MessageType;
 
 /**
  * Read records from a Parquet file.
+ * <pre>
+ *   1. 在构造方法中读取 footers信息的迭代器
+ *   2. 在 initReader() 方法中对foot信息应用RowGroupFilter，对rowGroup进行信息过滤
+ * </pre>
  * TODO: too many constructors (https://issues.apache.org/jira/browse/PARQUET-39)
  */
 public class ParquetReader<T> implements Closeable {

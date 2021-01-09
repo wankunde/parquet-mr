@@ -59,6 +59,10 @@ class ColumnChunkPageReadStore implements PageReadStore {
     private final List<DataPage> compressedPages;
     private final DictionaryPage compressedDictionaryPage;
 
+    /**
+     *
+     * {@link parquet.hadoop.ParquetFileReader.Chunk#readAllPages()}
+     */
     ColumnChunkPageReader(BytesDecompressor decompressor, List<DataPage> compressedPages, DictionaryPage compressedDictionaryPage) {
       this.decompressor = decompressor;
       this.compressedPages = new LinkedList<DataPage>(compressedPages);
@@ -75,6 +79,11 @@ class ColumnChunkPageReadStore implements PageReadStore {
       return valueCount;
     }
 
+    /**
+     * 在调用构造方法时，所有数据就已经全部被读取出来了
+     * 取出 compressedPages 中的一个Page，解压后返回
+     *
+     */
     @Override
     public DataPage readPage() {
       if (compressedPages.isEmpty()) {

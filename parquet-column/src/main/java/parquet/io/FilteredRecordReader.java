@@ -26,6 +26,9 @@ import parquet.io.api.RecordMaterializer;
 
 /**
  * Extends the
+ * <pre>
+ * Reader增加了unboundFilter,可以在处理数据的时候，提前进行数据过滤
+ * </pre>
  * @author Jacob Metcalf
  *
  */

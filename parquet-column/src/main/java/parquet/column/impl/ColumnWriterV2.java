@@ -45,6 +45,11 @@ import parquet.io.api.Binary;
  *
  * @author Julien Le Dem
  *
+ * <pre>
+ * 1. ValuesWriter dataColumn 负责写入每一个数据值，底层根据是否进行字典编码，采用不同的write算法
+ * 2.
+ * </pre>
+ *
  */
 final class ColumnWriterV2 implements ColumnWriter {
   private static final Log LOG = Log.getLog(ColumnWriterV2.class);
@@ -273,6 +278,10 @@ final class ColumnWriterV2 implements ColumnWriter {
 
   /**
    * writes the current data to a new page in the page store
+   * <pre>
+   * 1. 取出dataColumn 中数据ByteInput和数据编码格式
+   * 2. 调用对应的writer，将数据流写出到pageWriter的buf中
+   * </pre>
    * @param rowCount how many rows have been written so far
    */
   public void writePage(long rowCount) {

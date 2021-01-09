@@ -106,6 +106,8 @@ public class MessageColumnIO extends GroupColumnIO {
       public RecordReader<T> visit(FilterPredicateCompat filterPredicateCompat) {
 
         FilterPredicate predicate = filterPredicateCompat.getFilterPredicate();
+        // 这里builder就是一个visitor，根据传入的predicate类型，返回对应的 ValueInspector 实现类
+        // 例如predicate = Eq<Integer>，根据传入的值和pred 内的value做比较，如果相等，setResult(true)
         IncrementallyUpdatedFilterPredicateBuilder builder = new IncrementallyUpdatedFilterPredicateBuilder();
         IncrementallyUpdatedFilterPredicate streamingPredicate = builder.build(predicate);
         RecordMaterializer<T> filteringRecordMaterializer = new FilteringRecordMaterializer<T>(
@@ -144,6 +146,9 @@ public class MessageColumnIO extends GroupColumnIO {
     });
   }
 
+  /**
+   * GroupWriter在writeGroup时的消费类
+   */
   private class MessageColumnIORecordConsumer extends RecordConsumer {
     private ColumnIO currentColumnIO;
     private int currentLevel = 0;

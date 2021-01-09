@@ -33,6 +33,12 @@ import parquet.io.api.RecordConsumer;
 import parquet.schema.MessageType;
 import parquet.schema.MessageTypeParser;
 
+/**
+ * <pre>
+ * 1. schema 数据schema, 注意: setSchema 是static静态方法，全局配置，而write(record)方法是具体实例在调用，注意同步这两者关系
+ * 2. GroupWriter(recordConsumer, schema) 有了schema，根据传入的consumer就可以创建groupWriter, 将Group数据全部写出
+ * </pre>
+ */
 public class GroupWriteSupport extends WriteSupport<Group> {
 
   public static final String PARQUET_EXAMPLE_SCHEMA = "parquet.example.schema";

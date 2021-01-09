@@ -125,6 +125,21 @@ class InternalParquetRecordWriter<T> {
     return lastRowGroupEndPos + columnStore.getBufferedSize();
   }
 
+  /**
+   * 在 writeSupport 写完当前SimpleGroup(record)后进行内存检查，看内存占用是否满足BlockSize限制。
+   *
+   * 1. writer 在创建的时候会设置好 blockSize, pageSize, dictionaryPageSize 三个参数
+   * 2. 如果当前已经使用的内存大于BlockSize，数据 flush 作为一个Block(RowGroup)
+   *
+   * 例如：
+   * nextRowGroupSize = blockSize = 1024
+   *
+   * recordCount = 100
+   * memSize = 5212
+   * recordSize = 5212/ 100 = 521
+   *
+   * 5212 > (1024 - 2*521) 数据进行Flush
+   */
   private void checkBlockSizeReached() throws IOException {
     if (recordCount >= recordCountForNextMemCheck) { // checking the memory size is relatively expensive, so let's not do it for every record.
       long memSize = columnStore.getBufferedSize();
@@ -147,6 +162,11 @@ class InternalParquetRecordWriter<T> {
     }
   }
 
+  /**
+   * 所有columns对应的数据写入磁盘，作为一个Block
+   *
+   * @throws IOException
+   */
   private void flushRowGroupToStore()
       throws IOException {
     LOG.info(format("Flushing mem columnStore to file. allocated memory: %,d", columnStore.getAllocatedSize()));

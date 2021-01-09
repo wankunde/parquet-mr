@@ -23,6 +23,10 @@ import parquet.io.api.Binary;
 import static parquet.Preconditions.checkNotNull;
 
 /**
+ * <pre>
+ * 1. ValueInspector的实现类表示一个具体的判断规则
+ * 2. ValueInspector实现类中通过update(value) 对传入的值，调用 setResult()设置predicate结果
+ * </pre>
  * A rewritten version of a {@link parquet.filter2.predicate.FilterPredicate} which receives
  * the values for a record's columns one by one and internally tracks whether the predicate is
  * satisfied, unsatisfied, or unknown.

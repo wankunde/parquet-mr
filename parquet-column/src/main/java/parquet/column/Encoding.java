@@ -53,6 +53,18 @@ import parquet.io.ParquetDecodingException;
 /**
  * encoding of the data
  *
+ * <pre>
+ * 1. 同名类 parquet.format.Encoding 只是明确了数据类型， 这个自定义枚举类功能进行了扩展
+ * 2. 定义了N中数据编码类型，通过对应类型的 getValuesReader() 方法就可以获取到对应的reader
+ *
+ * 算法参考文档:
+ * 1. https://github.com/sjtufighter/----Data---Storage--/blob/master/encodingDetails.md
+ * 包含 plain, Dictionary, bit-packing, Run Length, Delta bit -packing 各种Encoding的说明
+ *
+ * 2. http://fatkun.com/2016/11/parquet-encoding-definitions.html parquet编码定义
+ *
+ * </pre>
+ *
  * @author Julien Le Dem
  *
  */

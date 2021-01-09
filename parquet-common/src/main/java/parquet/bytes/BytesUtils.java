@@ -39,6 +39,9 @@ public class BytesUtils {
 
   /**
    * give the number of bits needed to encode an int given the max value
+   *
+   * 返回bound的二进制数据从右数的第一个非零位，例如56(00111000) 返回6
+   *
    * @param bound max int that we want to encode
    * @return the number of bits required
    */

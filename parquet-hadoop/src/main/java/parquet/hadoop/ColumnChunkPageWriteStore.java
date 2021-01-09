@@ -43,6 +43,24 @@ import parquet.hadoop.CodecFactory.BytesCompressor;
 import parquet.io.ParquetEncodingException;
 import parquet.schema.MessageType;
 
+/**
+ * <pre>
+ * 1. store中每个column对应一个writer
+ * 2. writer.writePage方法将数据BytesInput bytes写入buf中
+ * 3. flushToFileWriter() 迭代调用内部writers将writer内的buf数据写入到外部文件输出流
+ *
+ * ColumnWriter
+ *    ColumnWriterV1 : 引用 PageWriter
+ *    ColumnWriterV2 : 引用 PageWriter
+ *
+ * PageWriter
+ *    ColumnChunkPageWriter
+ *      writeDictionaryPage
+ *      writerPage()
+ *      writerPageV2()
+ *
+ * </pre>
+ */
 class ColumnChunkPageWriteStore implements PageWriteStore {
   private static final Log LOG = Log.getLog(ColumnChunkPageWriteStore.class);
 
@@ -73,6 +91,14 @@ class ColumnChunkPageWriteStore implements PageWriteStore {
       this.totalStatistics = getStatsBasedOnType(this.path.getType());
     }
 
+    /**
+     * <pre>
+     * 1. 对数据进行compress
+     * 2. 构建并写入DataPageHeader
+     * 3. 写入compressedBytes
+     * 4. collect结果到buf中
+     * </pre>
+     */
     @Override
     public void writePage(BytesInput bytes,
                           int valueCount,

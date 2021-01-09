@@ -26,6 +26,18 @@ import java.util.Arrays;
 
 /**
  * Statistics class to keep track of statistics in parquet pages and column chunks
+ * <pre>
+ *   1. 主要数据内容:
+ *   type: 标识数据类型
+ *   num_nulls：父类数据， null记录数
+ *   min, max: 根据数据类型，存储具体数据
+ *
+ *   2. getStatsBasedOnType： 根据数据类型，获取对应实现子类对象，
+ *   3. mergeStatistics: 将每个page的统计信息合并到total统计中
+ *   4. 数据更新
+ *   4.1 ColumnWriterV2.writeNull() -> statistics.incrementNumNulls()
+ *   4.2 ColumnWriterV2.write() -> updateStats(value)
+ * </pre>
  *
  * @author Katya Gonina
  */

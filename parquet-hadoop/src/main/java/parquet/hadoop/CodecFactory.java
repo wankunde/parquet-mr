@@ -74,6 +74,13 @@ class CodecFactory {
 
   /**
    * Encapsulates the logic around hadoop compression
+   * <pre>
+   *     codecName: 只是一个名字，没有实际意义
+   *  1. 根据传入的codec 获取一个compressor，再创建对应的输出流
+   *  2. compress()
+   *  2.1  BytesInput.writeAllTo(cos) 将数据写入输出流进行压缩，屏蔽底层BytesInput的实现（不关心是Bos，还是数组等）
+   *  2.2 压缩结构重新包装为BytesInput对象
+   * </pre>
    *
    * @author Julien Le Dem
    *

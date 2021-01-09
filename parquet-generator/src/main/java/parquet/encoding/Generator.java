@@ -24,6 +24,14 @@ import parquet.encoding.bitpacking.IntBasedBitPackingGenerator;
 /**
  * main class for code generation hook in build for encodings generation
  *
+ * <pre>
+ *   这个真的是无语了，代码生成居然是运行main方法，手动传入参数来生成？
+ *
+ *   能不能优雅点哈～～
+ *
+ * main运行参数: /Users/wankun/ws/wankun/parquet-mr/parquet-encoding/src/main/java
+ * </pre>
+ *
  * @author Julien Le Dem
  *
  */

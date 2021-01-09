@@ -43,6 +43,21 @@ import parquet.filter2.predicate.Operators.UserDefined;
  *
  * See {@link Operators} for the implementation of the operator tokens,
  * and {@link FilterApi} for the dsl functions for constructing an expression tree.
+ *
+ * <pre>
+ *  1. 统一调用入口: predicate.accept(visitor) ->  实际执行visitor(predicate type)
+ *  2. FilterPredicateCompat 是一个包装类，增加访问者模式实现代码
+ *  3. 类继承关系:
+ *  FilterPredicate
+ *  --> ColumnFilterPredicate<T extends Comparable<T>>
+ *    -->  Eq, NotEq, Lt, Gt, LtEq, GtEq
+ *  --> BinaryLogicalFilterPredicate
+ *    --> And, Or
+ *  --> Not
+ *  --> UserDefined<T extends Comparable<T>, U extends UserDefinedPredicate<T>>
+ *  --> LogicalNotUserDefined <T extends Comparable<T>, U extends UserDefinedPredicate<T>>
+ *
+ * </pre>
  */
 public interface FilterPredicate {
 

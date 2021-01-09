@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
@@ -50,6 +51,7 @@ import parquet.column.page.PageReader;
 import parquet.hadoop.ParquetFileReader;
 import parquet.hadoop.metadata.BlockMetaData;
 import parquet.hadoop.metadata.ColumnChunkMetaData;
+import parquet.hadoop.metadata.FileMetaData;
 import parquet.hadoop.metadata.ParquetMetadata;
 import parquet.io.api.Binary;
 import parquet.io.api.Converter;
@@ -62,6 +64,65 @@ import parquet.tools.util.PrettyPrintWriter.WhiteSpaceHandler;
 
 import com.google.common.base.Joiner;
 
+/**
+ * <pre>
+ *
+ * 1. Using:
+ *  command line: parquet-tools dump [option] xxx.parquet
+ *  options:
+ *    默认会打印meta信息，和所有字段信息
+ *    -d: 不打印数据
+ *    -m: 不打印meta信息
+ *    -c：打印指定字段
+ *
+ * 2. Meta信息解读
+ * 2.1 打印数据的group信息
+ * - {@link MetadataUtils#showDetails(PrettyPrintWriter, ColumnChunkMetaData, boolean)}
+ * - 数据解读:
+ * Type: BINARY / INT32
+ * Codec: SNAPPY
+ * DictionaryPageOffset: DO
+ * FirstDataPageOffset: FPO
+ * TotalSize / TotalUncompressedSize / (TotalSize/TotalUncompressedSize): SZ:86680/88435/1.02
+ * ValueCount: VC
+ * Encodings: ENC:BIT_PACKED,PLAIN_DICTIONARY
+ *
+ * row group 0 # 数据在文件的第几个Group中
+ * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ * biz_id:                 BINARY SNAPPY DO:0 FPO:4 SZ:12781311/14711901/1.15 VC:350242 ENC:BIT_PACKED,PLAIN,RLE
+ * scene_id:               INT32 SNAPPY DO:0 FPO:12781315 SZ:141/135/0.96 VC:350242 ENC:BIT_PACKED,RLE,PLAIN_DICTIONARY
+ * result:                 BINARY SNAPPY DO:0 FPO:31285123 SZ:86680/88435/1.02 VC:350242 ENC:BIT_PACKED,PLAIN_DICTIONARY
+ * sentence:
+ * .list:
+ * ..element:              BINARY SNAPPY DO:0 FPO:31371803 SZ:32418858/73409092/2.26 VC:377833 ENC:PLAIN,RLE
+ *
+ * 2.2 Column Meta
+ * - {@link #dump(PrettyPrintWriter, PageReadStore, ColumnDescriptor)}
+ * - 不同的字段会有不同的Page个数，每个page内的value个数是不一样的
+ * - DataPageV2 的DLE和RLE一定是RLE，所以这里显示的结果是DataPageV1的结果
+ * - 数据解读:
+ * DLE: definition level encoding
+ * RLE: repetition level encoding
+ * VLE: ValueEncoding
+ * SZ: UncompressedSize
+ * VC: ValueCount
+ *
+ biz_id TV=350242 RL=0 DL=1
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ page 0:                                        DLE:RLE RLE:BIT_PACKED VLE:PLAIN SZ:1048664 VC:24968
+ page 1:                                        DLE:RLE RLE:BIT_PACKED VLE:PLAIN SZ:1048664 VC:24968
+ ....
+ page 13:                                       DLE:RLE RLE:BIT_PACKED VLE:PLAIN SZ:1048664 VC:24968
+ page 14:                                       DLE:RLE RLE:BIT_PACKED VLE:PLAIN SZ:28987 VC:690
+
+ scene_id TV=350242 RL=0 DL=1 DS:              1 DE:PLAIN_DICTIONARY
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ page 0:                                        DLE:RLE RLE:BIT_PACKED VLE:PLAIN_DICTIONARY SZ:12 VC:262146
+ page 1:                                        DLE:RLE RLE:BIT_PACKED VLE:PLAIN_DICTIONARY SZ:12 VC:88096
+ *
+ *
+ * </pre>
+ */
 public class DumpCommand extends ArgsOnlyCommand {
     private static final Charset UTF8 = Charset.forName("UTF-8");
     private static final CharsetDecoder UTF8_DECODER = UTF8.newDecoder();

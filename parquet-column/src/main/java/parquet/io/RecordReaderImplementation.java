@@ -232,6 +232,7 @@ class RecordReaderImplementation<T> extends RecordReader<T> {
     }
   }
 
+  // @See FilteringGroupConverter
   private final GroupConverter recordRootConverter;
   private final RecordMaterializer<T> recordMaterializer;
 
@@ -241,6 +242,9 @@ class RecordReaderImplementation<T> extends RecordReader<T> {
   private boolean shouldSkipCurrentRecord = false;
 
   /**
+   * <pre>
+   * 对MessageColumnIO中的所有字段PrimitiveColumnIO实例化一个columnReaders进行数据读取。
+   * </pre>
    * @param root the root of the schema
    * @param recordMaterializer responsible of materializing the records
    * @param validating whether we should validate against the schema
@@ -384,6 +388,11 @@ class RecordReaderImplementation<T> extends RecordReader<T> {
   }
 
   /**
+   * <pre>
+   * 1. columnReader.writeCurrentValueToConverter() 读取数据到对应Group的converter
+   * 2. 对读取数出来的bytes作为一个Page进行数据解析
+   * 3. recordMaterializer: SimpleRecordMaterializer内部组合了一个SimpleRecordConverter, 返回当前数据作为一个SimpleRecord对象
+   * </pre>
    * @see parquet.io.RecordReader#read()
    */
   @Override

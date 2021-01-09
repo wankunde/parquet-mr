@@ -58,6 +58,9 @@ import parquet.io.api.Binary;
  * Will attempt to encode values using a dictionary and fall back to plain encoding
  *  if the dictionary gets too big
  *
+ * <pre>
+ *   对写入的数据进行字典编码，然后在encodedValues添加数据在字典中的下标
+ * </pre>
  * @author Julien Le Dem
  *
  */

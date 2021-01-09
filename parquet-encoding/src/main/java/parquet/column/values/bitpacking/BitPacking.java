@@ -30,6 +30,37 @@ import parquet.column.values.bitpacking.BitPacking.BitPackingWriter;
 /**
  * provides the correct implementation of a bitpacking based on the width in bits
  *
+ * <pre>
+ *   正常int数据使用plain方式存储，需要4个字节，下面的数据就需要 4 * 8 = 32个字节
+ *
+ *   |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |
+ *   -------------------------------------------------
+ *   | 000 | 001 | 010 | 011 | 100 | 101 | 110 | 111 |
+ *
+ * 因为上面的数据实际有效位只有低3位，其他(4*8-3)=29都浪费了，BitPacking 对数据进行压缩
+ * 根据有效位多少，确定使用不同的压缩类，这里用：ThreeBitPackingWriter
+ *
+ * 压缩过程:
+ * 使用int类型数据(4*8=32位)做buffer，来压缩下面数据序列: 2 1 3 4 6 7 0 5
+ *
+ * 010 --> 00000000 00000000 00000000 00000010  // 数据左移3位，新数据放入低3位
+ * 001 --> 00000000 00000000 00000000 00010001
+ * 011 --> 00000000 00000000 00000000 10001011
+ * 100 --> 00000000 00000000 00000100 01011100
+ * 110 --> 00000000 00000000 00100010 11100110
+ * 111 --> 00000000 00000001 00010111 00110111
+ * 000 --> 00000000 00001000 10111001 10111000
+ * 001 --> 00000000 01000101 11001101 11000001
+ *
+ * 当放入的数据有8个时，int数据的低24位刚好为8个byte，依次写出01000101, 11001101, 11000001 这三个byte
+ * 1. 当我们的数据数量非8倍数时，调用finish方法，对缺的数据放入0 进行数据补齐
+ * 2. ThreeBitPackingWriter, TwoBitPackingWriter, FourBitPackingWriter 都只使用了int buffer的低8为进行数据缓存
+ *    FiveBitPackingWriter 使用 long 的低 5 * 8 位进行缓存
+ *    SevenBitPackingWriter 使用 long 的低 7 * 8 位进行缓存
+ *    SixBitPackingWriter 使用 int 的低 6 * 4 位进行缓存
+ *    EightBitPackingWriter 直接将int 转换位 byte进行输出
+ * </pre>
+ *
  * @author Julien Le Dem
  *
  */

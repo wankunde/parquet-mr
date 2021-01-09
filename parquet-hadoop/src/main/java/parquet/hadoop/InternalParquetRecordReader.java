@@ -53,6 +53,30 @@ import static java.lang.String.format;
 import static parquet.Log.DEBUG;
 import static parquet.Preconditions.checkNotNull;
 
+/**
+ * <pre>
+ * It's like a subclass of {@link org.apache.hadoop.mapreduce.RecordReader}.
+ * 区别2点，
+ *
+ * 第一：Hadoop的RecordReader应该是没有构造方法，通过反射动态实例化进行数据读取，而这里需要传入
+ * ReadSupport<T> readSupport, Filter filter 两个重要参数，用于数据读取和过滤
+ *
+ * 第二：initialize方法。MapReduce的变成接口只有两个参数：
+ * initialize(InputSplit split,TaskAttemptContext context)
+ *
+ * 而这里为：
+ * initialize(MessageType fileSchema,
+ *          FileMetaData parquetFileMetadata,
+ *          Path file, List<BlockMetaData> blocks, Configuration configuration)
+ *
+ * // 个人感觉和Hadoop脱轨的原因可能是因为构造函数的原因
+ *
+ * getCurrentKey() -> null
+ * getCurrentValue() -> recordValue
+ * getProgress() -> current / total
+ * close() -> reader.close()
+ * </pre>
+ */
 class InternalParquetRecordReader<T> {
   private static final Log LOG = Log.getLog(InternalParquetRecordReader.class);
 

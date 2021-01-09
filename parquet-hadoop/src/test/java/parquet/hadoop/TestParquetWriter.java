@@ -111,6 +111,8 @@ public class TestParquetWriter {
         writer.close();
         ParquetReader<Group> reader = ParquetReader.builder(new GroupReadSupport(), file).withConf(conf).build();
         for (int i = 0; i < 1000; i++) {
+          // 这个例子中每个Record就是代表一个一条记录，没有很复杂的嵌套结构，所以上面的write 和 这里的read都是一个Group
+          // 因为记录中每个字段对应的值只有一个，所以group取数据时，index = 0
           Group group = reader.read();
           assertEquals("test" + (i % modulo), group.getBinary("binary_field", 0).toStringUsingUTF8());
           assertEquals(32, group.getInteger("int32_field", 0));

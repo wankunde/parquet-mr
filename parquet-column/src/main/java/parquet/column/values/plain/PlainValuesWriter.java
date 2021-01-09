@@ -32,6 +32,9 @@ import parquet.io.api.Binary;
 
 /**
  * Plain encoding except for booleans
+ * <pre>
+ *   直接转发写入的数据
+ * </pre>
  *
  * @author Julien Le Dem
  *

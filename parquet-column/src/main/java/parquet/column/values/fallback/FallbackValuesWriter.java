@@ -25,6 +25,12 @@ import parquet.column.values.RequiresFallback;
 import parquet.column.values.ValuesWriter;
 import parquet.io.api.Binary;
 
+/**
+ * <pre>
+ * 支持writer降级，开始的时候使用DictionaryValuesWriter 进行write。
+ * writer初始化会指定dictionaryPageSize 参数。当dictionary的内存占用超过该值时，fallback到备用 PlainValuesWriter.
+ * </pre>
+ */
 public class FallbackValuesWriter<I extends ValuesWriter & RequiresFallback, F extends ValuesWriter> extends ValuesWriter {
 
   public static <I extends ValuesWriter & RequiresFallback, F extends ValuesWriter> FallbackValuesWriter<I, F> of(I initialWriter, F fallBackWriter) {

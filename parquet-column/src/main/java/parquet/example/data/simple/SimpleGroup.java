@@ -28,6 +28,35 @@ import parquet.schema.GroupType;
 import parquet.schema.Type;
 
 
+/**
+ * <pre>
+ * schema:
+ * {
+ *   id: Int,
+ *   name: String
+ *   isMan: Boolean
+ * }
+ *
+ * Data:
+ * {
+ *    {0, 1, 2},
+ *    {"user1"},
+ *    {true, false, false, true}
+ * }
+ *
+ * 0. 表示一个非结构化的数据存储消息，内部使用List<Object>[] data进行数据存储
+ *
+ * 1. getValue() & add()
+ *
+ * getValue(fieldIndex=0, index=2) = 2
+ * getValue(fieldIndex=1, index=0) = 'user1'
+ * getValue(fieldIndex=2, index=3) = true
+ *
+ * add(int fieldIndex, Primitive value): 设置对应位置的数据值
+ *
+ * 2. writeValue(field, index, recordConsumer): 调用getValue获取值，再写入数据到consumer
+ * </pre>
+ */
 public class SimpleGroup extends Group {
 
   private final GroupType schema;

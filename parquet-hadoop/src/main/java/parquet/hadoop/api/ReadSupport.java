@@ -29,6 +29,11 @@ import parquet.schema.MessageTypeParser;
 /**
  * Abstraction used by the {@link parquet.hadoop.ParquetInputFormat} to materialize records
  *
+ * <pre>
+ * 1. 支持列裁剪: getSchemaForRead用户会传入读取的部分字段Schema，用于列裁剪。如果不需要列裁剪，传入空
+ * 2. ReadContext: 存储requestedSchema 和一些其他属性
+ * </pre>
+ *
  * @author Julien Le Dem
  *
  * @param <T> the type of the materialized record
